@@ -1,39 +1,108 @@
-import React from 'react'
-import { SrollView, StyleSheet, Text, View } from 'react-native'
-import Expo from 'expo'
-import ExpoTHREE, { THREE } from 'expo-three
-import ExpoGraphics from 'expo-graphics'
+/* eslint-disable */ /**
+ * @flow
+ */
+import { firebase, database, storageRef } from "../firebase/Fire";
+import React from "react";
+import {
+  Dimensions,
+  Image,
+  Slider,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+  Button
+} from "react-native";
+import Expo, { Asset, Audio, FileSystem, Font, Permissions } from "expo";
+import {
+  Recorder,
+  Player
+} from "react-native-audio-player-recorder-no-linking";
 
-console.disableYellowBox = true
-export default class ARScreen extends React.Component {
-    static navigationOptions = {
-        header: null,
+export default class AudioRecordingScreen extends React.Component {
+  constructor() {
+    super();
+    this.uploadHandle = this.uploadHandle.bind(this);
+    this.comp = this.comp.bind(this);
+  }
+
+  uploadHandle = async () => {
+    if (this.state.recording && this.state.isDoneRecording) {
+      const info = await FileSystem.getInfoAsync(this.recording.getURI());
+      const uri = info.uri;
+      console.log("URI IS HERE JAHH  \n\n", uri);
     }
+  };
 
-    onContextCreate = async ({gl, scale, width, height, arSession}) => {
-        // Initialize renderer..
-        this.renderer = ExpoTHREE.createRenderer({gl})
-        this.renderer.setPixelRatio(scale)
-        this.renderer.setSize(width, height)
-
-        this.scene = new THREE.Scene()
-        this.scene.background = ExpoTHREE.createARBackgroundTexture(arSession, this.renderer)
-
-        this.camera - ExpoTHREE.createARCamera(arSession, width/scale, height/scale, 0.01, 1000)
+  async comp(rec) {
+    console.log("ON COMPLETE RAN AND THE URI IS HERE: ", rec.uri);
+    try {
+      const file = await FileSystem.writeAsStringAsync(rec.uri);
+      const fileRef = await storageRef.child(`/sounds/one.caf`);
+      await storageRef.put(file);
+    } catch (er) {
+      console.log(er);
     }
+  }
 
-    onRender = (delta) => {
-        this.renderer.render(this.scene, this.camera)
-    }
-
-    render() {
-        return (
-            <ExpoGraphics.View style={{flex:1}}
-            onContextCreate={this.onContextCreate}
-            onRender={this.onRender}
-            arEnabled={true}
+  render() {
+    return (
+      <Recorder
+        style={{ flex: 1 }}
+        onComplete={this.comp}
+        maxDurationMillis={150000}
+        showDebug={true}
+        showBackButton={true}
+        audioMode={{
+          allowsRecordingIOS: true,
+          interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+          playsInSilentModeIOS: true,
+          playsInSilentLockedModeIOS: true,
+          shouldDuckAndroid: true,
+          interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+          playThroughEarpieceAndroid: false
+        }}
+        resetButton={renderProps => {
+          return (
+            <Button
+              title="reset"
+              onPress={renderProps.onPress}
+              danger
+              block
+              style={{ marginVertical: 5 }}
+            >
+              <Text>Reset</Text>
+            </Button>
+          );
+        }}
+        recordingCompleteButton={renderProps => {
+          return (
+            <Button
+              title="Save Recording"
+              onPress={renderProps.onPress}
+              block
+              success
+              style={{ marginVertical: 5 }}
+            >
+              <Text>Finish</Text>
+            </Button>
+          );
+        }}
+        playbackSlider={renderProps => {
+          console.log({ "maximumValue: ": renderProps.maximumValue });
+          return (
+            <Slider
+              minimimValue={0}
+              maximumValue={renderProps.maximumValue}
+              onValueChange={renderProps.onSliderValueChange}
+              value={renderProps.value}
+              style={{
+                width: "100%"
+              }}
             />
-        )
-        
-    }
+          );
+        }}
+      />
+    );
+  }
 }

@@ -7,8 +7,9 @@ import {
 
 import TabBarIcon from "../components/TabBarIcon";
 import HomeScreen from "../screens/HomeScreen";
-import LinksScreen from "../screens/LinksScreen";
+import PositionScreen from "../screens/LinksScreen";
 import SettingsScreen from "../screens/SettingsScreen";
+import ARScreen from "../screens/ARScreen";
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen
@@ -28,12 +29,12 @@ HomeStack.navigationOptions = {
   )
 };
 
-const LinksStack = createStackNavigator({
-  Links: LinksScreen
+const PositionScreenStack = createStackNavigator({
+  Position: PositionScreen
 });
 
-LinksStack.navigationOptions = {
-  tabBarLabel: "Create",
+PositionScreenStack.navigationOptions = {
+  tabBarLabel: "GPS Location",
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -56,8 +57,23 @@ SettingsStack.navigationOptions = {
   )
 };
 
+const ARScreenStack = createStackNavigator({
+  ARScreen: ARScreen
+});
+
+ARScreenStack.navigationOptions = {
+  tabBarLabel: "Audio",
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={Platform.OS === "ios" ? "ios-options" : "md-options"}
+    />
+  )
+};
+
 export default createBottomTabNavigator({
   HomeStack,
-  LinksStack,
-  SettingsStack
+  PositionScreenStack,
+  SettingsStack,
+  ARScreen
 });
