@@ -1,5 +1,4 @@
 import React from "react";
-import { ExpoConfigView } from "@expo/samples";
 import { Form, Button } from "native-base";
 import { View } from "expo-graphics";
 import { TextInput } from "react-native-gesture-handler";

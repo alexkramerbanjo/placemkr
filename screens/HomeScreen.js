@@ -9,8 +9,6 @@ import {
   View
 } from "react-native";
 import Expo, { WebBrowser } from "expo";
-import ExpoThree, { THREE } from "expo-three";
-import ExpoGraphics from "expo-graphics";
 
 import { MonoText } from "../components/StyledText";
 

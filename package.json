@@ -11,8 +11,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@expo/samples": "2.1.1",
-    "expo": "^32.0.0",
+    "expo": "^32.0.1",
     "expo-graphics": "^1.0.2",
     "expo-three": "^3.0.0-alpha.6",
     "firebase": "^5.7.3",
