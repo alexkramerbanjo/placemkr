@@ -8,10 +8,7 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
-import Expo, { WebBrowser } from "expo";
-import ExpoThree, { THREE } from "expo-three";
-import ExpoGraphics from "expo-graphics";
-
+import { WebBrowser } from "expo";
 import { MonoText } from "../components/StyledText";
 
 export default class HomeScreen extends React.Component {

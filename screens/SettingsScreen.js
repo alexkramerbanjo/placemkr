@@ -1,9 +1,8 @@
 import React from "react";
-import { ExpoConfigView } from "@expo/samples";
-import { Form, Button } from "native-base";
-import { View } from "expo-graphics";
+import { ExpoConfigReact } from "@expo/samples";
+import { Form, Button, Text, Label } from "native-base";
 import { TextInput } from "react-native-gesture-handler";
-import { database } from "../firebase/Fire";
+import { firestore } from "../firebase/firebaseInfo";
 
 function showDistance(lat1, long1, lat2, long2) {
   var distance = distanceInKmBetweenEarthCoordinates(lat1, long1, lat2, long2);
@@ -32,68 +31,80 @@ export default class SettingsScreen extends React.Component {
       location: { latitude: null, longitude: null },
       error: null
     };
+    this.sendForm = this.sendForm.bind(this);
   }
   static navigationOptions = {
-    title: "app.json"
+    title: "Text Input Screen"
   };
 
-  sendForm(formData) {
-    const data = {
-      location: this.state.location,
-      title: this.state.title,
-      author: this.state.author,
-      message: this.state.message
-    };
-    const lat = Number.parseFloat(data.location.latitude).toFixed(4);
-    const long = Number.parseFloat(data.location.longitude).toFixed(4);
-    database.ref(`${lat}_${long}/texts/${this.state.title}`).set();
+  sendForm() {
+    // const data = {
+    //   location: this.state.location,
+    //   title: this.state.title,
+    //   author: this.state.author,
+    //   message: this.state.message
+    // };
+    // const lat = Number.parseFloat(data.location.latitude).toFixed(4);
+    // const long = Number.parseFloat(data.location.longitude).toFixed(4);
+    // firestore
+    //   .collection(`/madePlaces/${lat}_${long}/texts/${this.state.title}`)
+    //   .set();
   }
   componentDidMount() {
     navigator.geolocation.getCurrentPosition(
       posit =>
-        this.setState(prevState => ({
+        this.setState({
           location: {
             longitude: posit.coords.longitude,
             latitude: posit.coords.latitude
           }
-        })),
+        }),
       err => this.setState({ error: err.message }),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     );
   }
 
   render() {
-    /* Go ahead and delete ExpoConfigView and replace it with your
-     * content, we just wanted to give you a quick view of your config */
+    /* Go ahead and delete ExpoConfigReact.Fragment and replace it with your
+     * content, we just wanted to give you a quick React.Fragment of your config */
     return (
-      <View style={styles.container}>
+      <React.Fragment>
         <Text>
-          Latitude: {this.state.latitude}
+          Latitude: {this.state.location.latitude}
           {"\n"}
-          Longitude: {this.state.longitude}
+          Longitude: {this.state.location.longitude}
           {this.state.error ? this.state.error : ""}
         </Text>
-        <View>
+        <React.Fragment>
+          <Label>message: </Label>
           <TextInput
+            style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
             onChangeText={stuff => this.setState({ message: stuff })}
             value={this.state.message}
           />
+          <Label>author: </Label>
+
           <TextInput
+            style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
             onChangeText={name => this.setState({ author: name })}
             value={this.state.author}
           />
+          <Label>title: </Label>
+
           <TextInput
-            onChangeText={title => this.setState({ title: name })}
+            style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
+            onChangeText={title => this.setState({ title: title })}
             value={this.state.title}
           />
-        </View>
-
+        </React.Fragment>
         <Button
           onPress={this.sendForm}
           title="Send"
           style={{ width: 100, paddingTop: 20 }}
-        />
-      </View>
+        >
+          <Text>Send!</Text>
+        </Button>
+      </React.Fragment>
     );
   }
 }

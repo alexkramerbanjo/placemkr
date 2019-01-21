@@ -35,14 +35,14 @@ export default class AudioRecordingScreen extends React.Component {
   };
 
   async comp(rec) {
-    console.log("ON COMPLETE RAN AND THE URI IS HERE: ", rec.uri);
-    try {
-      const file = await FileSystem.writeAsStringAsync(rec.uri);
-      const fileRef = await storageRef.child(`/sounds/one.caf`);
-      await storageRef.put(file);
-    } catch (er) {
-      console.log(er);
-    }
+    // console.log("ON COMPLETE RAN AND THE URI IS HERE: ", rec.uri);
+    // try {
+    //   const file = await FileSystem.writeAsStringAsync(rec.uri);
+    //   const fileRef = await storageRef.child(`/sounds/one.caf`);
+    //   await storageRef.put(file);
+    // } catch (er) {
+    //   console.log(er);
+    // }
   }
 
   render() {
