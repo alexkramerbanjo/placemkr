@@ -1,5 +1,7 @@
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { database } from "../firebase/Fire";
+import { Card, Button } from "react-native-elements";
 
 const styles = StyleSheet.create({
   container: {
@@ -11,46 +13,50 @@ const styles = StyleSheet.create({
 
 export default class PositionScreen extends React.Component {
   static navigationOptions = {
-    title: "GPS Position"
+    title: "View Local Art"
   };
 
   constructor() {
     super();
     this.state = {
-      latitude: null,
-      longitude: null,
+      location: { latitude: null, longitude: null },
       error: null,
-      renderCount: 0
+      renderCount: 0,
+      localArt: []
     };
-  }
-
-  componentDidUpdate() {
-    setInterval(() => {
-      navigator.geolocation.getCurrentPosition(
-        posit =>
-          this.setState(prevState => ({
-            longitude: posit.coords.longitude,
-            latitude: posit.coords.latitude,
-            renderCount: prevState.renderCount + 1
-          })),
-        err => this.setState({ error: err.message }),
-        { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-      );
-    }, 5000);
+    this.getArt = this.getArt.bind(this);
   }
 
   componentDidMount() {
     navigator.geolocation.getCurrentPosition(
       posit =>
         this.setState(prevState => ({
-          longitude: posit.coords.longitude,
-          latitude: posit.coords.latitude,
-          renderCount: prevState.renderCount + 1
+          location: {
+            longitude: posit.coords.longitude,
+            latitude: posit.coords.latitude
+          }
         })),
       err => this.setState({ error: err.message }),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     );
   }
+
+  getArt = async () => {
+    const art = [];
+    const lat = Number.parseFloat(this.state.location.latitude).toFixed(3);
+    const long = Number.parseFloat(this.state.location.longitude).toFixed(3);
+    const loc = `madePlaces/${lat}/${long}/texts`.replace(/\./g, "_");
+    const ref = database.ref(loc);
+    ref.orderByValue().on("value", snapshot => {
+      snapshot.forEach(data => {
+        this.setState(prevState => ({
+          localArt: [...prevState.localArt, data.val()]
+        }));
+      });
+    });
+    this.setState({ localArt: art });
+  };
+
   render() {
     return (
       <ScrollView style={styles.container}>
@@ -62,6 +68,16 @@ export default class PositionScreen extends React.Component {
             {this.state.error ? this.state.error : ""}
           </Text>
           <Text>Renders: {this.state.renderCount}</Text>
+          <Button onPress={this.getArt} title="Get Art!" />
+        </View>
+        <View>
+          {this.state.localArt.map((art, index) => (
+            <Card key={index}>
+              <Text>{art.title}</Text>
+              <Text>{art.message}</Text>
+              <Text>{art.author}</Text>
+            </Card>
+          ))}
         </View>
       </ScrollView>
     );

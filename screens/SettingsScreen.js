@@ -1,8 +1,9 @@
 import React from "react";
-import { Form, Button, Label } from "native-base";
+import { Form, Label } from "native-base";
 import { TextInput } from "react-native-gesture-handler";
 import { database } from "../firebase/Fire";
-import { View, Text } from "react-native";
+import { View } from "react-native";
+import { Button, Text } from "react-native-elements";
 
 function showDistance(lat1, long1, lat2, long2) {
   var distance = distanceInKmBetweenEarthCoordinates(lat1, long1, lat2, long2);
@@ -40,16 +41,18 @@ export default class SettingsScreen extends React.Component {
   sendForm(formData) {
     console.log(this.state);
     const data = {
+      message: this.state.message,
       location: this.state.location,
       title: this.state.title,
-      author: this.state.author,
-      message: this.state.message
+      author: this.state.author
     };
     console.log(data);
-    const lat = Number.parseFloat(data.location.latitude).toFixed(4);
-    const long = Number.parseFloat(data.location.longitude).toFixed(4);
+    const lat = Number.parseFloat(data.location.latitude).toFixed(3);
+    const long = Number.parseFloat(data.location.longitude).toFixed(3);
     const loc = `madePlaces/${lat}/${long}`.replace(/\./g, "_");
-    database.ref(`${loc}/texts/${this.state.title}`).set(data);
+    database
+      .ref(`${loc}/texts/${this.state.title.replace(/\W/g, "-")}`)
+      .set(data);
   }
   componentDidMount() {
     navigator.geolocation.getCurrentPosition(
@@ -69,7 +72,18 @@ export default class SettingsScreen extends React.Component {
     /* Go ahead and delete ExpoConfigView and replace it with your
      * content, we just wanted to give you a quick view of your config */
     return (
-      <View>
+      <View
+        style={{
+          paddingTop: 10,
+          paddingBottom: 20,
+          paddingLeft: 20,
+          paddingRight: 20,
+          borderRadius: 10,
+          flex: 1,
+          flexDirection: "column",
+          justifyContent: "space-between"
+        }}
+      >
         <Text>
           Latitude: {this.state.location.latitude}
           {"\n"}
@@ -79,21 +93,36 @@ export default class SettingsScreen extends React.Component {
         <View>
           <Label>Message: </Label>
           <TextInput
-            style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
+            multiline={true}
+            style={{
+              height: 100,
+              borderColor: "gray",
+              borderWidth: 2
+            }}
             title="message"
             onChangeText={stuff => this.setState({ message: stuff })}
             value={this.state.message}
           />
-          <Label>Name: </Label>
+          <Label>Author: </Label>
           <TextInput
-            style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
+            multiline={true}
+            style={{
+              height: 40,
+              borderColor: "gray",
+              borderWidth: 1
+            }}
             title="author"
             onChangeText={name => this.setState({ author: name })}
             value={this.state.author}
           />
           <Label>Title: </Label>
           <TextInput
-            style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
+            multiline={true}
+            style={{
+              height: 40,
+              borderColor: "gray",
+              borderWidth: 1
+            }}
             title="title"
             onChangeText={title => this.setState({ title: title })}
             value={this.state.title}
