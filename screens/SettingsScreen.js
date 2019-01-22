@@ -2,7 +2,7 @@ import React from "react";
 import { Form, Label } from "native-base";
 import { TextInput } from "react-native-gesture-handler";
 import { database } from "../firebase/Fire";
-import { View } from "react-native";
+import { View, Alert } from "react-native";
 import { Button, Text } from "react-native-elements";
 
 function showDistance(lat1, long1, lat2, long2) {
@@ -39,20 +39,24 @@ export default class SettingsScreen extends React.Component {
   };
 
   sendForm(formData) {
-    console.log(this.state);
-    const data = {
-      message: this.state.message,
-      location: this.state.location,
-      title: this.state.title,
-      author: this.state.author
-    };
-    console.log(data);
-    const lat = Number.parseFloat(data.location.latitude).toFixed(3);
-    const long = Number.parseFloat(data.location.longitude).toFixed(3);
-    const loc = `madePlaces/${lat}/${long}`.replace(/\./g, "_");
-    database
-      .ref(`${loc}/texts/${this.state.title.replace(/\W/g, "-")}`)
-      .set(data);
+    if (this.state.message) {
+      const data = {
+        message: this.state.message,
+        location: this.state.location,
+        title: this.state.title ? this.state.title : "untitled",
+        author: this.state.author ? this.state.author : "anonymous"
+      };
+      console.log(data);
+      const lat = Number.parseFloat(data.location.latitude).toFixed(3);
+      const long = Number.parseFloat(data.location.longitude).toFixed(3);
+      const loc = `madePlaces/${lat}/${long}`.replace(/\./g, "_");
+      database
+        .ref(`${loc}/texts/${this.state.title.replace(/\W/g, "-")}`)
+        .set(data);
+      this.setState({ message: "", author: "", title: "" });
+    } else {
+      Alert.alert("Message must not be empty!");
+    }
   }
   componentDidMount() {
     navigator.geolocation.getCurrentPosition(
@@ -93,6 +97,7 @@ export default class SettingsScreen extends React.Component {
         <View>
           <Label>Message: </Label>
           <TextInput
+            autoCorrect={false}
             multiline={true}
             style={{
               height: 100,
@@ -105,6 +110,7 @@ export default class SettingsScreen extends React.Component {
           />
           <Label>Author: </Label>
           <TextInput
+            autoCorrect={false}
             multiline={true}
             style={{
               height: 40,
@@ -117,6 +123,7 @@ export default class SettingsScreen extends React.Component {
           />
           <Label>Title: </Label>
           <TextInput
+            autoCorrect={false}
             multiline={true}
             style={{
               height: 40,

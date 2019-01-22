@@ -6,29 +6,10 @@ import {
 } from "react-navigation";
 
 import TabBarIcon from "../components/TabBarIcon";
-import HomeScreen from "../screens/HomeScreen";
 import PositionScreen from "../screens/LinksScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import ARScreen from "../screens/ARScreen";
 import VideoImagePicker from "../screens/VideoScreen";
-
-const HomeStack = createStackNavigator({
-  Home: HomeScreen
-});
-
-HomeStack.navigationOptions = {
-  tabBarLabel: "Home",
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === "ios"
-          ? `ios-information-circle${focused ? "" : "-outline"}`
-          : "md-information-circle"
-      }
-    />
-  )
-};
 
 const VideoImageScreenStack = createStackNavigator({
   VideoImage: VideoImagePicker
@@ -49,7 +30,7 @@ const PositionScreenStack = createStackNavigator({
 });
 
 PositionScreenStack.navigationOptions = {
-  tabBarLabel: "GPS Location",
+  tabBarLabel: "View Local Art",
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -63,7 +44,7 @@ const SettingsStack = createStackNavigator({
 });
 
 SettingsStack.navigationOptions = {
-  tabBarLabel: "Settings",
+  tabBarLabel: "Create Text",
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -73,7 +54,7 @@ SettingsStack.navigationOptions = {
 };
 
 const ARScreenStack = createStackNavigator({
-  ARScreen: ARScreen
+  AudioScreen: ARScreen
 });
 
 ARScreenStack.navigationOptions = {
@@ -88,8 +69,7 @@ ARScreenStack.navigationOptions = {
 
 export default createBottomTabNavigator({
   VideoImageScreenStack,
-  HomeStack,
   PositionScreenStack,
   SettingsStack,
-  ARScreen
+  ARScreenStack
 });

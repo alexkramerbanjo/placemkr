@@ -43,39 +43,38 @@ export default class PositionScreen extends React.Component {
 
   getArt = async () => {
     const art = [];
+    this.setState({ localArt: art });
     const lat = Number.parseFloat(this.state.location.latitude).toFixed(3);
     const long = Number.parseFloat(this.state.location.longitude).toFixed(3);
     const loc = `madePlaces/${lat}/${long}/texts`.replace(/\./g, "_");
     const ref = database.ref(loc);
     ref.orderByValue().on("value", snapshot => {
       snapshot.forEach(data => {
-        this.setState(prevState => ({
-          localArt: [...prevState.localArt, data.val()]
-        }));
+        if (data.val().message) {
+          this.setState(prevState => ({
+            localArt: [...prevState.localArt, data.val()]
+          }));
+        }
       });
     });
-    this.setState({ localArt: art });
   };
 
   render() {
     return (
       <ScrollView style={styles.container}>
         <View style={styles.container}>
-          <Text>
-            Latitude: {this.state.latitude}
-            {"\n"}
-            Longitude: {this.state.longitude}
-            {this.state.error ? this.state.error : ""}
-          </Text>
-          <Text>Renders: {this.state.renderCount}</Text>
-          <Button onPress={this.getArt} title="Get Art!" />
+          <Button onPress={this.getArt} title="Get Local Art!" />
         </View>
         <View>
           {this.state.localArt.map((art, index) => (
             <Card key={index}>
-              <Text>{art.title}</Text>
+              <Text
+                style={{ fontWeight: "bold", textDecorationLine: "underline" }}
+              >
+                {art.title}
+              </Text>
               <Text>{art.message}</Text>
-              <Text>{art.author}</Text>
+              <Text>By {art.author}</Text>
             </Card>
           ))}
         </View>
